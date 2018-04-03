@@ -1,0 +1,16 @@
+﻿{
+  "Enabled": true,
+  "AzureAdSettings": {
+    "Tenant": "",
+    "ClientId": ""
+  },
+  "AzureB2CSettings": {
+    "ClientId": "",
+    "Tenant": "",
+    "SignUpSignInPolicyId": "",
+    "ResetPasswordPolicyId": "",
+    "EditProfilePolicyId": "",
+    "RedirectUri": "",
+    "ClientSecret": ""
+  }
+}
