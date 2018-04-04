@@ -1,7 +1,10 @@
 # Getting started with ASP.NET Core 2 and Azure AD/B2C
-Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the current Microsoft.AspNetCore.Authentication library that enables token validation for both AzureAd and AzureB2C.
 
-It also scans your controllers for custom policies and will activate them during startup. See the documentation  below for more info.
+[![Build status](https://ci.appveyor.com/api/projects/status/11r3paicwclfblmc/branch/master?svg=true)](https://ci.appveyor.com/project/mkeymolen/hexiron-aspnetcore-authentication-azureadmixed/branch/master)  [![license](https://img.shields.io/github/license/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=2592000)](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/blob/master/LICENSE)  [![NuGet](https://img.shields.io/nuget/v/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=86400)](https://www.nuget.org/packages/Hexiron.AspNetCore.Authentication.AzureAdMixed/)
+
+Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the current Microsoft.AspNetCore.Authentication library that enables  you to use both AzureAD and Azure AD B2C combined.
+
+You can also define your own authorize attributes with the name of the scopes in Azure B2C and/or Application permissions in Azure AD. This enables you to do fine grained authorization on API method level!
 
 **Features**  
 
