@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
@@ -33,7 +35,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                     return Task.CompletedTask;
                 }
             }
-            return Task.CompletedTask;
+            throw new UnauthorizedAccessException("You do not have the right permissions to perform this action. Ask the owner to check your permissions please.");
         }
     }
 }
