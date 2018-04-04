@@ -9,7 +9,11 @@ version: 1.0.{build}
 #    environment configuration    #
 #---------------------------------#
 image: Visual Studio 2017
-
+pull_requests:  
+  do_not_increment_build_number: true
+nuget:  
+  disable_publish_on_pr: true
+test: off  
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -32,6 +36,7 @@ before_build:
 build_script:
   - cmd: dotnet build ./Hexiron.AspNetCore.Authentication.AzureAdMixed.sln
 after_build:
+  - cmd: dotnet pack ./src/Hexiron.AspNetCore.Authentication.AzureAdMixed/Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj
 artifacts:
 test_script:
   # run the unit tests (requires changing into the test directory)
