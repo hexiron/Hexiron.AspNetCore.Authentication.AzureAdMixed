@@ -10,7 +10,7 @@ else{
 	Write-Host "Version: $BuildVersionNumber"
 }
 
-Get-ChildItem -Path $PSScriptRoot\..\src -Filter *.csproj -Recurse | ForEach-Object{ 
+Get-ChildItem -Path $PSScriptRoot\src -Filter *.csproj -Recurse | ForEach-Object{ 
     $ProjectJsonPath =  $_.FullName
 	$csproj = [xml](Get-Content $ProjectJsonPath)
     if ($TagVersionNumber){
@@ -23,4 +23,3 @@ Get-ChildItem -Path $PSScriptRoot\..\src -Filter *.csproj -Recurse | ForEach-Obj
     }
 }
 dotnet build "$PSScriptRoot\Hexiron.AspNetCore.Authentication.AzureAdMixed.sln"
-dotnet pack "$PSScriptRoot\src\Hexiron.AspNetCore.Authentication.AzureAdMixed\Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj"
