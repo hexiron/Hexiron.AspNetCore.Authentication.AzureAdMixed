@@ -16,4 +16,10 @@
     <ProjectReference Include="..\..\src\Hexiron.AspNetCore.Authentication.AzureAdMixed\Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="AzureAuthenticationSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
