@@ -3,6 +3,14 @@ Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the curr
 
 It also scans your controllers for custom policies and will activate them during startup. See the documentation  below for more info.
 
+**Features**  
+
+- Validates Azure AD JWT tokens
+- Enables the use of Authorization policies with the same name as the Application Permission defined in Azure AD
+- Validates Azure AD B2C JWT tokens
+- Enables the use of Authorization policies with the same name as the scopes defined in Azure B2C
+- TODO: ASPNET.Core OpenIdConnect + authorization flow with Azure B2C for user login
+
 ### 1. Create a new ASP.NET Core project ###
 In Visual Studio 2017.
 ### 2. Add dependency in csproj manually or using NuGet ###
