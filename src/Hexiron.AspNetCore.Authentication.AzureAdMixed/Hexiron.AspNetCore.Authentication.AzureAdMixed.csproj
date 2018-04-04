@@ -17,11 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="contentFiles\AzureAuthenticationSettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="contentFiles\AzureAuthenticationSettings.json">
+    <Content Include="AzureAuthenticationSettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
