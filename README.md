@@ -74,3 +74,77 @@ private readonly IHostingEnvironment _environment;
             _environment = environment;
         }
 ```
+
+### 6. Create your Azure B2C tenant and register you API app
+TODO How to create tenant
+
+- Add your tenant id to the settings file (...onmicrosoft.com)
+- Create your API app in your B2C tenant. Add the B2C suffix for simplicity later on
+- Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureB2CSettings part
+- Go to "Published scopes" and create the scopes you need to access your APIs (you will add the same scope name as an Authorization policy attribute on your API methods)  
+Example: "read:methods"
+- Add an Authorization attribute and register this scope as a policy on your API method
+
+```csharp
+[Authorize("read:methods")]
+public IActionResult Methods()
+  {
+     return Ok();
+  }
+```
+
+### 7. Register your Azure AD application if you need API to API communication (client credentials flow/ machine to machine communication
+
+- Within the same B2C Active directory tenant in Azure, go to all services -> Azure Active directory
+- Go to App registrations and create your API app.  For simplicity, take the same name as the name you've chosen in Azure B2C but remove the B2C suffix
+- Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureAdSettings part
+- Open the manifest and add the scopes as AppRoles:  
+Make sure you create unique identifiers as Id
+
+```json
+"appRoles": [
+    {
+      "allowedMemberTypes": [
+        "Application"
+      ],
+      "displayName": "Read methods",
+      "id": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+      "isEnabled": true,
+      "description": "Can read methods",
+      "value": "read:methods"
+    },
+    {
+      "allowedMemberTypes": [
+        "Application"
+      ],
+      "displayName": ".....",
+      "id": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+      "isEnabled": true,
+      "description": ".......",
+      "value": "...:..."
+    }
+]
+```
+
+### 8. Register your client apps and give them the permissions to the scopes
+TODO How to create tenant
+
+**In Azure AD B2C**
+1. Create a new app for your client
+2. Go to API Access
+3. Add
+4. Select your API app
+5. Select the scopes you want to give access to
+
+**In Azure Acitive Directory**
+1. Create a new app for your client in App registrations
+2. Go to Settings
+3. Required Permissions
+4. Add
+5. Select API
+6. Fill in the name of your api app without
+7. Select the Azure AD app (without the B2C suffix)
+8. Select the permissions you want to give access to
+9. Don't forget to click on "Grant Permissions"
+
+The scopes will now be added to the JWT token of the client and validated at API side.
