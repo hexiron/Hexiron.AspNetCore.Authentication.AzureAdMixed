@@ -6,6 +6,13 @@
     <Company>Hexiron BVBA</Company>
     <AssemblyName>Hexiron.AspNetCore.Authentication.AzureAdMixed</AssemblyName>
     <RootNamespace>Hexiron.AspNetCore.Authentication.AzureAdMixed</RootNamespace>
+    <Description>ASP.NET Core types and middlewares to accept tokens from Azure B2C and Azure AD tenants. For more info, see the project url</Description>
+    <Copyright>Hexiron BVBA</Copyright>
+    <PackageLicenseUrl>https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>ASP.NET core JWT Azure AD AzureB2C B2C Authentication Authorization Aspnetcore Mix token tokenvalidation</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
