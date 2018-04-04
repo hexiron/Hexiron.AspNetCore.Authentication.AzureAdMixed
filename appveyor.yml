@@ -33,8 +33,8 @@ before_build:
   - cmd: dotnet restore ./Hexiron.AspNetCore.Authentication.AzureAdMixed.sln
 build_script:
   - cmd: dotnet build ./Hexiron.AspNetCore.Authentication.AzureAdMixed.sln --configuration Release
-after_build:
   - cmd: dotnet pack ./src/Hexiron.AspNetCore.Authentication.AzureAdMixed/Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj
+after_build:
 artifacts:
  - path: '**\*.nupkg'
 test_script:
