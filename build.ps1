@@ -14,11 +14,11 @@ Get-ChildItem -Path $PSScriptRoot\src -Filter *.csproj -Recurse | ForEach-Object
     $ProjectJsonPath =  $_.FullName
 	$csproj = [xml](Get-Content $ProjectJsonPath)
     if ($TagVersionNumber){
-       $csproj.Project.PropertyGroup.VersionPrefix = $TagVersionNumber
+       $csproj.Project.PropertyGroup.Version = $TagVersionNumber
 	   $csproj.Save($ProjectJsonPath)
     }
     else{
-       $csproj.Project.PropertyGroup.VersionPrefix = $BuildVersionNumber
+       $csproj.Project.PropertyGroup.Version = $BuildVersionNumber
 	   $csproj.Save($ProjectJsonPath)
     }
 }
