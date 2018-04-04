@@ -17,14 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="AzureAuthenticationSettings.json">
-      <IncludeInPackage>true</IncludeInPackage>
-      <BuildAction>Content</BuildAction>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.3" />
