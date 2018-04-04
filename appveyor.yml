@@ -20,7 +20,7 @@ init:
 install:
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj'
+  file: '.\src\**\*.csproj'
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
