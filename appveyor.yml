@@ -38,6 +38,7 @@ build_script:
 after_build:
   - cmd: dotnet pack ./src/Hexiron.AspNetCore.Authentication.AzureAdMixed/Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj
 artifacts:
+ - path: '**\*.nupkg'
 test_script:
   # run the unit tests (requires changing into the test directory)
   #- cmd: cd tests
