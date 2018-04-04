@@ -18,14 +18,14 @@ init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
 install:
-  dotnet_csproj:
-    patch: true
-    file: '**\*.csproj'
-    version: '{version}'
-    package_version: '{version}'
-    assembly_version: '{version}'
-    file_version: '{version}'
-    informational_version: '{version}'
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
 before_build:
   # Display .NET Core version
   - cmd: dotnet --version
