@@ -20,8 +20,8 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var builder = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddJsonFile("AzureAuthenticationSettings.json")
-                .AddJsonFile($"AzureAuthenticationSettings.{environment}.json", optional: true);
+                .AddJsonFile("azureauthenticationsettings.json")
+                .AddJsonFile($"azureauthenticationsettings.{environment}.json", optional: true);
             var azureConfigurationFile = builder.Build();
             s_azureSettings = azureConfigurationFile.Get<AzureAuthenticationSettings>();
         }
