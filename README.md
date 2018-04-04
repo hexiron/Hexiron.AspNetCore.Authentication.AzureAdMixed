@@ -50,19 +50,8 @@ We use the following example:
   }
 }
 ```
-### 4. Enable copy to bin folder
 
-Enable copy to bin folder for azureauthenticationsettings.json by changing it properties
-
-
-or edit `.csproj` file manually and add:
-```xml
-  <ItemGroup>
-    <Content Update="azureauthenticationsettings.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-```
-
-### 5. Register the serivice for the middleware
+### 4. Register the serivice for the middleware
 In the startup.cs class, register the following service:
   
 ```csharp  
@@ -86,12 +75,14 @@ private readonly IHostingEnvironment _environment;
         }
 ```
 
-### 6. Create your Azure B2C tenant and register you API app
+### 5. Create your Azure B2C tenant and register you API app
 TODO How to create tenant
 
 - Add your tenant id to the settings file (...onmicrosoft.com)
 - Create your API app in your B2C tenant. Add the B2C suffix for simplicity later on
 - Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureB2CSettings part
+- Create a Sign-up/Sign-in policy and select the attributes you want to ask to fill in by the user (Sign-up attributes) and the attributes you want to send to the API (Application claims)
+- Copy the name of this sign-up/sign-in policy and add it to the AzureB2CSettings part (SignUpSignInPolicyId)
 - Go to "Published scopes" and create the scopes you need to access your APIs (you will add the same scope name as an Authorization policy attribute on your API methods)  
 Example: "read:methods"
 - Add an Authorization attribute and register this scope as a policy on your API method
@@ -104,7 +95,7 @@ public IActionResult Methods()
   }
 ```
 
-### 7. Register your Azure AD application if you need API to API communication (client credentials flow/ machine to machine communication
+### 6. Register your Azure AD application if you need API to API communication (client credentials flow/ machine to machine communication
 
 - Within the same B2C Active directory tenant in Azure, go to all services -> Azure Active directory
 - Go to App registrations and create your API app.  For simplicity, take the same name as the name you've chosen in Azure B2C but remove the B2C suffix
@@ -137,7 +128,7 @@ Make sure you create unique identifiers as Id
 ]
 ```
 
-### 8. Register your client apps and give them the permissions to the scopes
+### 7. Register your client apps and give them the permissions to the scopes
 TODO How to create tenant
 
 **In Azure AD B2C**
