@@ -1,0 +1,31 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+version: 1.0.{build}
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+image: Visual Studio 2017
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+platform: Any CPU
+configuration: Release
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
+build:
+  parallel: true                  # enable MSBuild parallel builds
+  project: Hexiron.AspNetCore.Authentication.AzureAdMixed.sln      # path to Visual Studio solution or project
+  verbosity: detailed
