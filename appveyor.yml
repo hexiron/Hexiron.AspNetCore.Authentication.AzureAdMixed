@@ -10,12 +10,6 @@ version: 1.0.{build}
 #---------------------------------#
 image: Visual Studio 2017
 
-#---------------------------------#
-#       build configuration       #
-#---------------------------------#
-
-platform: Any CPU
-configuration: Release
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -25,7 +19,26 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 
-build:
-  parallel: true                  # enable MSBuild parallel builds
-  project: Hexiron.AspNetCore.Authentication.AzureAdMixed.sln      # path to Visual Studio solution or project
-  verbosity: detailed
+init:
+  # Good practise, because Windows line endings are different from Unix/Linux ones
+  - cmd: git config --global core.autocrlf true
+install:
+  # Install repo specific stuff here
+before_build:
+  # Display .NET Core version
+  - cmd: dotnet --version
+  # Display minimal restore text
+  - cmd: dotnet restore ./Hexiron.AspNetCore.Authentication.AzureAdMixed --verbosity m
+build_script:
+  - cmd: dotnet build ./Hexiron.AspNetCore.Authentication.AzureAdMixed
+after_build:
+  # For once the build has completed
+artifacts:
+
+test_script:
+  # run the unit tests (requires changing into the test directory)
+  #- cmd: cd tests
+  #- cmd: dotnet xunit
+on_finish :
+  # any cleanup in here
+deploy: off
