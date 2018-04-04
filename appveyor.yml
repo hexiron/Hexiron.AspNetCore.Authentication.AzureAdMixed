@@ -32,7 +32,7 @@ before_build:
   # Display minimal restore text
   - cmd: dotnet restore ./Hexiron.AspNetCore.Authentication.AzureAdMixed.sln
 build_script:
-  - cmd: dotnet build ./Hexiron.AspNetCore.Authentication.AzureAdMixed.sln
+  - cmd: dotnet build ./Hexiron.AspNetCore.Authentication.AzureAdMixed.sln --configuration Release
 after_build:
   - cmd: dotnet pack ./src/Hexiron.AspNetCore.Authentication.AzureAdMixed/Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj
 artifacts:
