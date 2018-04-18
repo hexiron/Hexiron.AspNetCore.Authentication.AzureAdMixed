@@ -21,6 +21,7 @@
 
         public string Authority => $"{Domain}/{SignUpSignInPolicyId}/v2.0";
         public string Domain => $"{_azureB2CInstance}/{Tenant}";
+        public string ScopePrefix { get; set; }
 
         //public string ClientSecret { get; set; }
         

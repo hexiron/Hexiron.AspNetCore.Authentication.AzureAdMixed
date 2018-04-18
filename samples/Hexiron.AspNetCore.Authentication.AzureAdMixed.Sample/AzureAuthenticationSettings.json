@@ -11,6 +11,7 @@
     "ResetPasswordPolicyId": "b2c_1_reset",
     "EditProfilePolicyId": "b2c_1_edit_profile",
     "RedirectUri": "https://localhost:44340//signin-oidc",
-    "ClientSecret": "iSS]17=vtwA*P*D-AE68pA5O"
+    "ClientSecret": "iSS]17=vtwA*P*D-AE68pA5O",
+    "ScopePrefix": "https://kazib2c.onmicrosoft.com/kazi-api/"
   }
 }
