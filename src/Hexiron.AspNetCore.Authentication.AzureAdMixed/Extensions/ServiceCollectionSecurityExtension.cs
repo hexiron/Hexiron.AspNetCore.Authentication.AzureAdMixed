@@ -14,25 +14,27 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
 {
     public static class ServiceCollectionSecurityExtension
     {
-        private static AzureAuthenticationSettings s_azureSettings;
-        private static void LoadAzureAuthenticationSettings(IHostingEnvironment hostingEnvironment)
+        private static IConfiguration s_azureConfiguration;
+
+        public static void RegisterAzureSettings(this IServiceCollection services, IHostingEnvironment hostingEnvironment)
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddJsonFile("azureauthenticationsettings.json")
-                .AddJsonFile($"azureauthenticationsettings.{environment}.json", optional: true);
-            var azureConfigurationFile = builder.Build();
-            s_azureSettings = azureConfigurationFile.Get<AzureAuthenticationSettings>();
+            if (s_azureConfiguration == null)
+            {
+                s_azureConfiguration = AzureSettingsLoader.LoadAzureAuthenticationSettings(hostingEnvironment);
+            }
+            services.Configure<AzureB2CSettings>(s_azureConfiguration.GetSection("AzureB2CSettings"));
+            services.Configure<AzureB2CSettings>(s_azureConfiguration.GetSection("AzureAdSettings"));
         }
+
         public static void AddAzureJwtBearerAuthentication(this IServiceCollection services, IHostingEnvironment hostingEnvironment, Assembly controllerAssembly, string policyIdentifier = "")
         {
-            if (s_azureSettings == null)
+            if (s_azureConfiguration == null)
             {
-                LoadAzureAuthenticationSettings(hostingEnvironment);
+                s_azureConfiguration = AzureSettingsLoader.LoadAzureAuthenticationSettings(hostingEnvironment);
             }
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            var azureSettings = s_azureConfiguration.Get<AzureAuthenticationSettings>();
             // Setup Authentication
             services.AddAuthentication(options =>
             {
@@ -41,15 +43,15 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                 // add Azure AD B2C settings
                 .AddJwtBearer(AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME, options =>
                 {
-                    options.Authority = s_azureSettings.AzureB2CSettings.Authority;
-                    options.Audience = s_azureSettings.AzureB2CSettings.ClientId;
+                    options.Authority = azureSettings.AzureB2CSettings.Authority;
+                    options.Audience = azureSettings.AzureB2CSettings.ClientId;
 
                 })
                 // add Azure AD settings
                 .AddJwtBearer(AzureJwtSchemes.AZURE_AD_B2_C_AUTHENTICATION_SCHEME, options =>
                 {
-                    options.Authority = s_azureSettings.AzureAdSettings.Authority;
-                    options.Audience = s_azureSettings.AzureAdSettings.ClientId;
+                    options.Authority = azureSettings.AzureAdSettings.Authority;
+                    options.Audience = azureSettings.AzureAdSettings.ClientId;
                 });
 
             // Setup Authorization

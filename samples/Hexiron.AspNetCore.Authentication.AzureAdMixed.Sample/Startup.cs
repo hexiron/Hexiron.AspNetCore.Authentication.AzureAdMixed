@@ -15,6 +15,9 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // register Azure Settings
+           services.RegisterAzureSettings(_environment);
+
             // Add JwtBearerAuthentication
             services.AddAzureJwtBearerAuthentication(_environment, typeof(Startup).Assembly);
         }
