@@ -16,14 +16,14 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
     {
         private static IConfiguration s_azureConfiguration;
 
-        public static void RegisterAzureSettings(this IServiceCollection services, IHostingEnvironment hostingEnvironment)
+        public static AzureAuthenticationSettings RegisterAzureSettings(this IServiceCollection services, IHostingEnvironment hostingEnvironment)
         {
             if (s_azureConfiguration == null)
             {
                 s_azureConfiguration = AzureSettingsLoader.LoadAzureAuthenticationSettings(hostingEnvironment);
             }
-            services.Configure<AzureB2CSettings>(s_azureConfiguration.GetSection("AzureB2CSettings"));
-            services.Configure<AzureB2CSettings>(s_azureConfiguration.GetSection("AzureAdSettings"));
+            services.Configure<AzureAuthenticationSettings>(s_azureConfiguration);
+            return s_azureConfiguration.Get<AzureAuthenticationSettings>();
         }
 
         public static void AddAzureJwtBearerAuthentication(this IServiceCollection services, IHostingEnvironment hostingEnvironment, Assembly controllerAssembly, string policyIdentifier = "")

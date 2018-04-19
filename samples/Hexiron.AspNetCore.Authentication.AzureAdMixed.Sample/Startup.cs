@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
@@ -15,11 +18,23 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // register Azure Settings
-           services.RegisterAzureSettings(_environment);
-
             // Add JwtBearerAuthentication
             services.AddAzureJwtBearerAuthentication(_environment, typeof(Startup).Assembly);
+
+            // register Azure Settings
+            var azureSettings = services.RegisterAzureSettings(_environment);
+
+            var filterCollection = new FilterCollection();
+            if (!azureSettings.Enabled)
+            {
+                // No authentication
+                filterCollection.Add(new AllowAnonymousFilter());
+            }
+            // Register MVC
+            services.AddMvc(options =>
+            {
+                filterCollection.ToList().ForEach(filter => options.Filters.Add(filter));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -29,6 +44,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseMvc();
         }
     }
 }

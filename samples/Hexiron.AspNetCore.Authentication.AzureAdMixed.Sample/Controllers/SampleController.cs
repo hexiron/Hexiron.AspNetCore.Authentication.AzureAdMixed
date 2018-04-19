@@ -5,20 +5,20 @@ using Microsoft.Extensions.Options;
 
 namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample.Controllers
 {
-    [Route("api/{controller}")]
+    [Route("[controller]")]
     public class SampleController : Controller
     {
-        private readonly AzureB2CSettings _azureB2CSettings;
+        private readonly AzureAuthenticationSettings _azureSettings;
 
-        public SampleController(IOptions<AzureB2CSettings> azureB2CSettingsAccessor)
+        public SampleController(IOptions<AzureAuthenticationSettings> azureSettingsAccessor)
         {
-            _azureB2CSettings = azureB2CSettingsAccessor.Value;
+            _azureSettings = azureSettingsAccessor.Value;
         }
 
         [Authorize("read:methods")]
-        public IActionResult SecuredMethod()
+        public IActionResult Index()
         {
-            return Ok(_azureB2CSettings);
+            return Ok(_azureSettings);
         }
     }
 }
