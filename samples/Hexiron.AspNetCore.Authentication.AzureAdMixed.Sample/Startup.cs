@@ -1,8 +1,11 @@
 ﻿using System.Linq;
+using Hexiron.Azure.ActiveDirectory;
+using Hexiron.Azure.ActiveDirectory.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
@@ -18,12 +21,17 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add JwtBearerAuthentication
-            services.AddAzureJwtBearerAuthentication(_environment, typeof(Startup).Assembly);
-
             // register Azure Settings
-            var azureSettings = services.RegisterAzureSettings(_environment);
+            var azureConfiguration = AzureSettingsLoader.LoadAzureAdConfiguration(_environment);
+            // register Azure Settings
+            services.Configure<AzureAuthenticationSettings>(azureConfiguration);
+            var azureSettings = azureConfiguration.Get<AzureAuthenticationSettings>();
 
+
+            // Add JwtBearerAuthentication
+            services.AddAzureJwtBearerAuthentication(azureSettings, typeof(Startup).Assembly);
+
+            
             var filterCollection = new FilterCollection();
             if (!azureSettings.Enabled)
             {

@@ -12,7 +12,6 @@ You can also define your own authorize attributes with the name of the scopes in
 - Enables the use of Authorization policies with the same name as the Application Permission defined in Azure AD
 - Validates Azure AD B2C JWT tokens
 - Enables the use of Authorization policies with the same name as the scopes defined in Azure B2C
-- Registers the Azure settings so you can use them by using the AspNetCore Options pattern (IOptions<AuthenticationSettings>)
 - TODO: ASPNET.Core OpenIdConnect + authorization flow with Azure B2C for user login
 
 ### 1. Create a new ASP.NET Core project ###
@@ -53,14 +52,20 @@ We use the following example:
 ```
 
 ### 4. Register the serivice for the middleware
-In the startup.cs class, register the following service:
+In the startup.cs class, register the following service and configuration:
   
 ```csharp  
 public void ConfigureServices(IServiceCollection services)  
     {  
-        //...  
-        services.AddAzureJwtBearerAuthentication(_hostingEnvironment, typeof(Startup).Assembly);
-//...  
+			// register Azure Settings
+            var azureConfiguration = AzureSettingsLoader.LoadAzureAdConfiguration(_environment);
+            // register Azure Settings
+            services.Configure<AzureAuthenticationSettings>(azureConfiguration);
+            var azureSettings = azureConfiguration.Get<AzureAuthenticationSettings>();
+
+
+            // Add JwtBearerAuthentication
+            services.AddAzureJwtBearerAuthentication(azureSettings, typeof(Startup).Assembly);
     }  
 ```
 

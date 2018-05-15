@@ -1,4 +1,4 @@
-﻿using Hexiron.AspNetCore.Authentication.AzureAdMixed.Models;
+﻿using Hexiron.Azure.ActiveDirectory.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
