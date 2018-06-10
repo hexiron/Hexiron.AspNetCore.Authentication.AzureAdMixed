@@ -3,14 +3,15 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/11r3paicwclfblmc/branch/master?svg=true)](https://ci.appveyor.com/project/mkeymolen/hexiron-aspnetcore-authentication-azureadmixed/branch/master)  [![license](https://img.shields.io/github/license/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=2592000)](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/blob/master/LICENSE)  [![NuGet](https://img.shields.io/nuget/v/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=86400)](https://www.nuget.org/packages/Hexiron.AspNetCore.Authentication.AzureAdMixed/)
 
 Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the current Microsoft.AspNetCore.Authentication library that enables  you to use both AzureAD and Azure AD B2C combined.
+With this extension you can accept JWT tokens issued by either an Azure AD or Azure B2C tenant. 
 
 You can also define your own authorize attributes with the name of the scopes in Azure B2C and/or Application permissions in Azure AD. This enables you to do fine grained authorization on API method level!
 
 **Features**  
 
-- Validates Azure AD JWT tokens
+- Validate Azure AD JWT tokens
 - Enables the use of Authorization policies with the same name as the Application Permission defined in Azure AD
-- Validates Azure AD B2C JWT tokens
+- Validate Azure AD B2C JWT tokens
 - Enables the use of Authorization policies with the same name as the scopes defined in Azure B2C
 - TODO: ASPNET.Core OpenIdConnect + authorization flow with Azure B2C for user login
 
@@ -27,58 +28,82 @@ in csproj:
 <PackageReference Include="Hexiron.AspNetCore.Authentication.AzureAdMixed" Version="x.x.x" />
 ```
 
-### 3. Create an azureauthenticationsettings.json file. 
-Create azureauthenticationsettings.json (lowercase all) file in the root of your project.  
-In this file, you need to fill in the Azure settings from your Azure AD tenant(s).
-We use the following example:
+### 3. Make sure you register the settings in the startup class.
+
+You have multiple possibilities to load the settings in the startup class so they can be used by the IOptions pattern in the connectors.  
+- Add the settings in you appsettings.json file (and corresponding environment files)
+- Add the settings in the Azure web application settings online. Recomended for the secrets, so they are not exposed in source code
+
+See example below:
 
 ```json
 {
-  "Enabled": true,
   "AzureAdSettings": {
+	"Enabled": true,
     "Tenant": "tentantname.onmicrosoft.com",
-    "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa"
+    "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+	"ClientSecret": "fc54rg4d5gx4s5fg5dswrg"
   },
   "AzureB2CSettings": {
+	"Enabled": true,
     "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
     "Tenant": "tentantname.onmicrosoft.com",
     "SignUpSignInPolicyId": "defined_Policy_from_Azure",
     "ResetPasswordPolicyId": "defined_Policy_from_Azure",
     "EditProfilePolicyId": "defined_Policy_from_Azure",
     "RedirectUri": "https://.../signin-oidc",
-    "ClientSecret": "secret"
+    "ClientSecret": "secret",
+	"ScopePrefix": "https://myb2c.onmicrosoft.com/my-api/",
+    "ApiScopes": "read:companies write:companies" 
   }
 }
 ```
 
+```csharp  
+	private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+		// ...
+		// register Azure AD Settings to be able to use the IOptions pattern via DI
+        services.Configure<AzureAdSettings>(_configuration.GetSection("AzureAdSettings"));
+        var azureAdSettings = _configuration.Get<AzureAdSettings>();
+
+        // register Azure B2C Settings to be able to use the IOptions pattern via DI
+        services.Configure<AzureB2CSettings>(_configuration.GetSection("AzureB2CSettings"));
+        var azureB2CSettings = _configuration.Get<AzureB2CSettings>();
+
+		//...
+    }
+```
+
 ### 4. Register the serivice for the middleware
-In the startup.cs class, register the following service and configuration:
+In the startup.cs class, register the middleware:  
+You have multiple possibilities:  
+- You only register Azure AD JWT validation
+- You only register Azure B2C JWT validation
+- You register both Azure AD and Azure B2C JWT validation
   
 ```csharp  
 public void ConfigureServices(IServiceCollection services)  
     {  
-			// register Azure Settings
-            var azureConfiguration = AzureSettingsLoader.LoadAzureAdConfiguration(_environment);
-            // register Azure Settings
-            services.Configure<AzureAuthenticationSettings>(azureConfiguration);
-            var azureSettings = azureConfiguration.Get<AzureAuthenticationSettings>();
 
+        var azureAdSettings = _configuration.Get<AzureAdSettings>();
+		// You can only register for Azure AD
+        // services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
 
-            // Add JwtBearerAuthentication
-            services.AddAzureJwtBearerAuthentication(azureSettings, typeof(Startup).Assembly);
+        var azureB2CSettings = _configuration.Get<AzureB2CSettings>();
+		// You can also only register for Azure B2C
+        //services.AddAzureB2CJwtBearerAuthentication(azureB2CSettings, typeof(Startup).Assembly);
+
+        // Add JwtBearerAuthentication for Azure AD and B2C
+        services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureB2CSettings, typeof(Startup).Assembly);
     }  
-```
-
-Make sure you can inject the IHostingEnvironment interface. This is needed to load the correct settingsfile. You can inject the IHostingEnvironmnet in the startup.cs class by using property injection. The default WebhostBuilder from AspNetCore has already registered the implementation for you.  
-Also specify the assembly where your controllers are situated so it can load the correct Authorization policies from you controllers.
-
-
-```csharp  
-private readonly IHostingEnvironment _environment;
-        public Startup(IHostingEnvironment environment)
-        {
-            _environment = environment;
-        }
 ```
 
 ### 5. Create your Azure B2C tenant and register you API app
