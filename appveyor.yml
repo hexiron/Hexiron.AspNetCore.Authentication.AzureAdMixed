@@ -10,7 +10,6 @@ test: off
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
-  - ps: if ( ($env:APPVEYOR_REPO_BRANCH -eq 'master') -and ($env:APPVEYOR_REPO_TAG -eq $TRUE) ) { $env:APPVEYOR_BUILD_VERSION = $env:APPVEYOR_REPO_TAG_NAME }
 install:
 before_build:
   # Display .NET Core version
