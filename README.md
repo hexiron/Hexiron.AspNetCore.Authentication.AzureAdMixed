@@ -18,99 +18,88 @@ You can also define your own authorize attributes with the name of the scopes in
 ### 1. Create a new ASP.NET Core project ###
 In Visual Studio 2017.
 ### 2. Add dependency in csproj manually or using NuGet ###
-Install the latest:
-
-- Hexiron.AspNetCore.Authentication.AzureAdMixed 
-
-in csproj:
-
+Install the latest package of Hexiron.AspNetCore.Authentication.AzureAdMixed:
+in csproj add:
 ```xml
-
-	<PackageReference Include="Hexiron.AspNetCore.Authentication.AzureAdMixed" Version="x.x.x" />
+<PackageReference Include="Hexiron.AspNetCore.Authentication.AzureAdMixed" Version="x.x.x" />
 ```
 
 ### 3. Make sure you register the settings in the startup class.
-
 You have multiple possibilities to load the settings in the startup class so they can be used by the IOptions pattern in the connectors.  
 - Add the settings in you appsettings.json file (and corresponding environment files)
-- Add the settings in the Azure web application settings online. Recomended for the secrets, so they are not exposed in source code
+- Add the settings in the application settings online in your Azure Web app. The latter is recomended for the secrets so you don't need to expose them in source code.
 
-See example below:
-
+See example below if you store them in appsettingsfile:
 ```json
-
-	{
-	  "Authentication": {
-	    "AzureAd": {
-	      "Enabled": true,
-	      "Tenant": "tentantname.onmicrosoft.com",
-	      "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
-	      "ClientSecret": "avoid this and get if from azure vault or imediately from appsettings in azure webapp"
-	    },
-	    "AzureAdB2C": {
-	      "Enabled": true,
-	      "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
-	      "Tenant": "tentantname.onmicrosoft.com",
-	      "SignUpSignInPolicyId": "defined_Policy_from_Azure",
-	      "ResetPasswordPolicyId": "defined_Policy_from_Azure",
-	      "EditProfilePolicyId": "defined_Policy_from_Azure",
-	      "RedirectUri": "https://.../signin-oidc",
-	      "ClientSecret": "avoid this and get if from azure vault or imediately from appsettings in azure webapp"
-	    }
-	  }
-	}
+{
+  "Authentication": {
+    "AzureAd": {
+      "Enabled": true,
+      "Tenant": "tentantname.onmicrosoft.com",
+      "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+      "ClientSecret": "avoid this and get if from azure vault or imediately from appsettings in azure webapp"
+    },
+    "AzureAdB2C": {
+      "Enabled": true,
+      "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+      "Tenant": "tentantname.onmicrosoft.com",
+      "SignUpSignInPolicyId": "defined_Policy_from_Azure",
+      "ResetPasswordPolicyId": "defined_Policy_from_Azure",
+      "EditProfilePolicyId": "defined_Policy_from_Azure",
+      "RedirectUri": "https://.../signin-oidc",
+      "ClientSecret": "avoid this and get if from azure vault or imediately from appsettings in azure webapp"
+    }
+  }
+}
 ```
-
+Make sure you register the configuration settings in the startup class as the extensions in the library are using the IOptions pattern to get them via dependency injection.
 ```csharp  
+private readonly IConfiguration _configuration;
+public Startup(IConfiguration configuration)
+{
+	_configuration = configuration;
+}
+public void ConfigureServices(IServiceCollection services)
+{
+	// ...
+	// register Azure AD Settings to be able to use the IOptions pattern via DI
+	services.Configure<AzureAd>(_configuration.GetSection("Authentication:AzureAd"));
+	var azureAdSettings = _configuration.Get<AzureAd>();
 
-	private readonly IConfiguration _configuration;
-
-	public Startup(IConfiguration configuration)
-	{
-		_configuration = configuration;
-	}
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-		// ...
-		// register Azure AD Settings to be able to use the IOptions pattern via DI
-		services.Configure<AzureAd>(_configuration.GetSection("Authentication:AzureAd"));
-		var azureAdSettings = _configuration.Get<AzureAd>();
-
-		// register Azure B2C Settings to be able to use the IOptions pattern via DI
-		services.Configure<AzureAdB2C>(_configuration.GetSection("Authentication:AzureAdB2C"));
-		var azureB2CSettings = _configuration.Get<AzureAdB2C>();
-		//...
-	}
+	// register Azure B2C Settings to be able to use the IOptions pattern via DI
+	services.Configure<AzureAdB2C>(_configuration.GetSection("Authentication:AzureAdB2C"));
+	var azureB2CSettings = _configuration.Get<AzureAdB2C>();
+	//...
+}
 ```
 
-### 4. Register the serivice for the middleware
-In the startup.cs class, register the middleware:  
+### 4. Register the middleware service to enable JWT validation
+In the startup.cs class, register the middleware.  
 You have multiple possibilities:  
 - You only register Azure AD JWT validation
 - You only register Azure B2C JWT validation
 - You register both Azure AD and Azure B2C JWT validation
   
 ```csharp  
+public void ConfigureServices(IServiceCollection services)  
+{  
+	// You can only register for Azure AD
+	// services.AddAzureAdJwtBearerAuthentication(azureAd, typeof(Startup).Assembly);
+	// You can also only register for Azure B2C
+	//services.AddAzureB2CJwtBearerAuthentication(azureB2CSettings, typeof(Startup).Assembly);
 
-	public void ConfigureServices(IServiceCollection services)  
-	{  
-		// You can only register for Azure AD
-		// services.AddAzureAdJwtBearerAuthentication(azureAd, typeof(Startup).Assembly);
-		// You can also only register for Azure B2C
-		//services.AddAzureB2CJwtBearerAuthentication(azureB2CSettings, typeof(Startup).Assembly);
-	
-		// Register for Azure AD and B2C
-		services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureB2CSettings, typeof(Startup).Assembly);
-	}  
+	// Register for Azure AD and B2C
+	services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureB2CSettings, typeof(Startup).Assembly);
+}  
 ```
 
 ### 5. Create your Azure B2C tenant and register you API app
-TODO How to create tenant
+**TODO: How to create tenant**
+Once your tenant has been created in Azure:
 
-- Add your tenant id to the settings file (...onmicrosoft.com)
-- Create your API app in your B2C tenant. Add the B2C suffix for simplicity later on
-- Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureB2CSettings part
+- Add your tenant id (...onmicrosoft.com) to the settings file 
+- Create your API app in your B2C tenant. Add the B2C suffix to your app names if your using your B2C tenant for both Azure AD and Azure AD B2C. This for simplicity later on
+- Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureADB2C part
 - Create a Sign-up/Sign-in policy and select the attributes you want to ask to fill in by the user (Sign-up attributes) and the attributes you want to send to the API (Application claims)
 - Copy the name of this sign-up/sign-in policy and add it to the AzureB2CSettings part (SignUpSignInPolicyId)
 - Go to "Published scopes" and create the scopes you need to access your APIs (you will add the same scope name as an Authorization policy attribute on your API methods)  
@@ -118,15 +107,14 @@ Example: "read:methods"
 - Add an Authorization attribute and register this scope as a policy on your API method
 
 ```csharp
-
-	[Authorize("read:methods")]
-	public IActionResult Methods()
-	{
-		return Ok();
-	}
+[Authorize("read:methods")]
+public IActionResult Methods()
+{
+	return Ok();
+}
 ```
 
-### 6. Register your Azure AD application if you need API to API communication (client credentials flow/ machine to machine communication
+### 6. Register your Azure AD application if you need API to API communication (client credentials flow or machine to machine communication
 
 - Within the same B2C Active directory tenant in Azure, go to all services -> Azure Active directory
 - Go to App registrations and create your API app.  For simplicity, take the same name as the name you've chosen in Azure B2C but remove the B2C suffix
@@ -135,29 +123,28 @@ Example: "read:methods"
 Make sure you create unique identifiers as Id
 
 ```json
-
-	"appRoles": [
-	    {
-	      "allowedMemberTypes": [
-	        "Application"
-	      ],
-	      "displayName": "Read methods",
-	      "id": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
-	      "isEnabled": true,
-	      "description": "Can read methods",
-	      "value": "read:methods"
-	    },
-	    {
-	      "allowedMemberTypes": [
-	        "Application"
-	      ],
-	      "displayName": ".....",
-	      "id": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
-	      "isEnabled": true,
-	      "description": ".......",
-	      "value": "...:..."
-	    }
-	]
+"appRoles": [
+    {
+      "allowedMemberTypes": [
+        "Application"
+      ],
+      "displayName": "Read methods",
+      "id": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+      "isEnabled": true,
+      "description": "Can read methods",
+      "value": "read:methods"
+    },
+    {
+      "allowedMemberTypes": [
+        "Application"
+      ],
+      "displayName": ".....",
+      "id": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
+      "isEnabled": true,
+      "description": ".......",
+      "value": "...:..."
+    }
+]
 ```
 
 ### 7. Register your client apps and give them the permissions to the scopes
