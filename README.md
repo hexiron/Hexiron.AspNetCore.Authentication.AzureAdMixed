@@ -65,23 +65,23 @@ See example below:
 
 	private readonly IConfiguration _configuration;
 
-    public Startup(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+	public Startup(IConfiguration configuration)
+	{
+		_configuration = configuration;
+	}
 
     public void ConfigureServices(IServiceCollection services)
     {
 		// ...
 		// register Azure AD Settings to be able to use the IOptions pattern via DI
-        services.Configure<AzureAd>(_configuration.GetSection("AzureAd"));
-        var azureAdSettings = _configuration.Get<AzureAd>();
+		services.Configure<AzureAd>(_configuration.GetSection("Authentication:AzureAd"));
+		var azureAdSettings = _configuration.Get<AzureAd>();
 
-        // register Azure B2C Settings to be able to use the IOptions pattern via DI
-        services.Configure<AzureAdB2C>(_configuration.GetSection("AzureAdB2C"));
-        var azureB2CSettings = _configuration.Get<AzureAdB2C>();
+		// register Azure B2C Settings to be able to use the IOptions pattern via DI
+		services.Configure<AzureAdB2C>(_configuration.GetSection("Authentication:AzureAdB2C"));
+		var azureB2CSettings = _configuration.Get<AzureAdB2C>();
 		//...
-    }
+	}
 ```
 
 ### 4. Register the serivice for the middleware
@@ -94,18 +94,15 @@ You have multiple possibilities:
 ```csharp  
 
 	public void ConfigureServices(IServiceCollection services)  
-    {  
-        var azureAdSettings = _configuration.Get<AzureAd>();
+	{  
 		// You can only register for Azure AD
-        // services.AddAzureAdJwtBearerAuthentication(azureAd, typeof(Startup).Assembly);
-
-        var azureB2CSettings = _configuration.Get<AzureAdB2C>();
+		// services.AddAzureAdJwtBearerAuthentication(azureAd, typeof(Startup).Assembly);
 		// You can also only register for Azure B2C
-        //services.AddAzureB2CJwtBearerAuthentication(azureB2CSettings, typeof(Startup).Assembly);
-
-        // Add JwtBearerAuthentication for Azure AD and B2C
-        services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureB2CSettings, typeof(Startup).Assembly);
-    }  
+		//services.AddAzureB2CJwtBearerAuthentication(azureB2CSettings, typeof(Startup).Assembly);
+	
+		// Register for Azure AD and B2C
+		services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureB2CSettings, typeof(Startup).Assembly);
+	}  
 ```
 
 ### 5. Create your Azure B2C tenant and register you API app
