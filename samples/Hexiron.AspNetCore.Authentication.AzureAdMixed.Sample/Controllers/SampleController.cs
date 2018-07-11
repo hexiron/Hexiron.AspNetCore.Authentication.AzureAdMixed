@@ -8,9 +8,9 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample.Controllers
     [Route("[controller]")]
     public class SampleController : Controller
     {
-        private readonly AzureAdSettings _azureAdSettings;
+        private readonly AzureAd _azureAdSettings;
 
-        public SampleController(IOptions<AzureAdSettings> azureSettingsAccessor)
+        public SampleController(IOptions<AzureAd> azureSettingsAccessor)
         {
             _azureAdSettings = azureSettingsAccessor.Value;
         }

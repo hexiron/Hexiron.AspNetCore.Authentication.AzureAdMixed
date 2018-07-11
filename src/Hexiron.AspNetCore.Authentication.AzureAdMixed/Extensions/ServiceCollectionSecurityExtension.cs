@@ -13,7 +13,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
 {
     public static class ServiceCollectionSecurityExtension
     {
-        public static void AddAzureAdJwtBearerAuthentication(this IServiceCollection services, AzureAdSettings azureAdSettings, Assembly controllerAssembly, string policyIdentifier = "")
+        public static void AddAzureAdJwtBearerAuthentication(this IServiceCollection services, AzureAd azureAdSettings, Assembly controllerAssembly, string policyIdentifier = "")
         {
             // Setup Authentication
             services.AddAuthentication(options =>
@@ -40,7 +40,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             });
         }
 
-        public static void AddAzureB2CJwtBearerAuthentication(this IServiceCollection services, AzureB2CSettings azureB2CSettings, Assembly controllerAssembly, string policyIdentifier = "")
+        public static void AddAzureB2CJwtBearerAuthentication(this IServiceCollection services, AzureAdB2C azureB2CSettings, Assembly controllerAssembly, string policyIdentifier = "")
         {
             // Setup Authentication
             services.AddAuthentication(options =>
@@ -67,7 +67,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             });
         }
 
-        public static void AddAzureAdAndB2CJwtBearerAuthentication(this IServiceCollection services, AzureAdSettings azureAdSettings, AzureB2CSettings azureB2CSettings, Assembly controllerAssembly, string policyIdentifier = "")
+        public static void AddAzureAdAndB2CJwtBearerAuthentication(this IServiceCollection services, AzureAd azureAdSettings, AzureAdB2C azureB2CSettings, Assembly controllerAssembly, string policyIdentifier = "")
         {
             // Setup Authentication
             services.AddAuthentication(options =>
@@ -133,7 +133,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             return policies;
         }
 
-        private static AuthenticationBuilder AddAzureAdJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAdSettings azureAdSettings)
+        private static AuthenticationBuilder AddAzureAdJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAd azureAdSettings)
         {
             // add Azure AD settings
             return authenticationBuilder
@@ -144,7 +144,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                 });
         }
 
-        private static AuthenticationBuilder AddAzureB2CJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureB2CSettings azureB2CSettings)
+        private static AuthenticationBuilder AddAzureB2CJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAdB2C azureB2CSettings)
         {
             // add Azure AD B2C settings
             return authenticationBuilder

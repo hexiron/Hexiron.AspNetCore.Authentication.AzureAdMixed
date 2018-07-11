@@ -21,21 +21,21 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
         public void ConfigureServices(IServiceCollection services)
         {
             // register Azure AD Settings to be able to use the IOptions pattern via DI
-            services.Configure<AzureAdSettings>(_configuration.GetSection("AzureAdSettings"));
-            var azureAdSettings = _configuration.Get<AzureAdSettings>();
+            services.Configure<AzureAd>(_configuration.GetSection("Authentication:AzureAd"));
+            var azureAdSettings = _configuration.Get<AzureAd>();
 
             // register Azure B2C Settings to be able to use the IOptions pattern via DI
-            services.Configure<AzureB2CSettings>(_configuration.GetSection("AzureB2CSettings"));
-            var azureB2CSettings = _configuration.Get<AzureB2CSettings>();
+            services.Configure<AzureAdB2C>(_configuration.GetSection("Authentication:AzureAdB2C"));
+            var azureAdB2CSettings = _configuration.Get<AzureAdB2C>();
 
             // Add JwtBearerAuthentication for Azure AD and B2C
-            services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureB2CSettings, typeof(Startup).Assembly);
+            services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
 
             // You can also only register for Azure AD
             // services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
 
             // You can also only register for Azure B2C
-            //services.AddAzureB2CJwtBearerAuthentication(azureB2CSettings, typeof(Startup).Assembly);
+            //services.AddAzureB2CJwtBearerAuthentication(azureAdB2CSettings, typeof(Startup).Assembly);
 
             var filterCollection = new FilterCollection();
             if (!azureAdSettings.Enabled)
