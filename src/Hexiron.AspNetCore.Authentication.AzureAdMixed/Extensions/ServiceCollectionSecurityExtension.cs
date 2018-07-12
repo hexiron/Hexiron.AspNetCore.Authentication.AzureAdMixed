@@ -13,13 +13,13 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
 {
     public static class ServiceCollectionSecurityExtension
     {
-        public static void AddAzureAdJwtBearerAuthentication(this IServiceCollection services, AzureAd azureAdSettings, Assembly controllerAssembly, string policyIdentifier = "")
+        public static void AddAzureAdJwtBearerAuthentication(this IServiceCollection services, AzureAdOptions azureAdOptions, Assembly controllerAssembly, string policyIdentifier = "")
         {
             // Setup Authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME;
-            }).AddAzureAdJwtBearer(azureAdSettings);
+            }).AddAzureAdJwtBearer(azureAdOptions);
 
             // Setup Authorization
             var customPolicyBuilder = new AuthorizationPolicyBuilder(AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME);
@@ -40,13 +40,13 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             });
         }
 
-        public static void AddAzureB2CJwtBearerAuthentication(this IServiceCollection services, AzureAdB2C azureB2CSettings, Assembly controllerAssembly, string policyIdentifier = "")
+        public static void AddAzureB2CJwtBearerAuthentication(this IServiceCollection services, AzureAdB2COptions azureB2COptions, Assembly controllerAssembly, string policyIdentifier = "")
         {
             // Setup Authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME;
-            }).AddAzureB2CJwtBearer(azureB2CSettings);
+            }).AddAzureB2CJwtBearer(azureB2COptions);
 
             // Setup Authorization
             var customPolicyBuilder = new AuthorizationPolicyBuilder(AzureJwtSchemes.AZURE_AD_B2_C_AUTHENTICATION_SCHEME);
@@ -67,15 +67,15 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             });
         }
 
-        public static void AddAzureAdAndB2CJwtBearerAuthentication(this IServiceCollection services, AzureAd azureAdSettings, AzureAdB2C azureB2CSettings, Assembly controllerAssembly, string policyIdentifier = "")
+        public static void AddAzureAdAndB2CJwtBearerAuthentication(this IServiceCollection services, AzureAdOptions azureAdOptions, AzureAdB2COptions azureB2COptions, Assembly controllerAssembly, string policyIdentifier = "")
         {
             // Setup Authentication
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME;
                 })
-                .AddAzureB2CJwtBearer(azureB2CSettings)
-                .AddAzureAdJwtBearer(azureAdSettings);
+                .AddAzureB2CJwtBearer(azureB2COptions)
+                .AddAzureAdJwtBearer(azureAdOptions);
 
             // Setup Authorization
             var customPolicyBuilder = new AuthorizationPolicyBuilder(AzureJwtSchemes.AZURE_AD_B2_C_AUTHENTICATION_SCHEME, AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME);
@@ -133,25 +133,25 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             return policies;
         }
 
-        private static AuthenticationBuilder AddAzureAdJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAd azureAdSettings)
+        private static AuthenticationBuilder AddAzureAdJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAdOptions azureAdOptions)
         {
             // add Azure AD settings
             return authenticationBuilder
                 .AddJwtBearer(AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME, options =>
                 {
-                    options.Authority = azureAdSettings.Authority;
-                    options.Audience = azureAdSettings.ClientId;
+                    options.Authority = azureAdOptions.Authority;
+                    options.Audience = azureAdOptions.ClientId;
                 });
         }
 
-        private static AuthenticationBuilder AddAzureB2CJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAdB2C azureB2CSettings)
+        private static AuthenticationBuilder AddAzureB2CJwtBearer(this AuthenticationBuilder authenticationBuilder, AzureAdB2COptions azureB2COptions)
         {
             // add Azure AD B2C settings
             return authenticationBuilder
                 .AddJwtBearer(AzureJwtSchemes.AZURE_AD_B2_C_AUTHENTICATION_SCHEME, options =>
                 {
-                    options.Authority = azureB2CSettings.Authority;
-                    options.Audience = azureB2CSettings.ClientId;
+                    options.Authority = azureB2COptions.Authority;
+                    options.Audience = azureB2COptions.ClientId;
 
                 });
         }

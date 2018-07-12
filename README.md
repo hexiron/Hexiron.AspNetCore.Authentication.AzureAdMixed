@@ -63,11 +63,11 @@ public void ConfigureServices(IServiceCollection services)
 {
 	// ...
 	// register Azure AD Settings to be able to use the IOptions pattern via DI
-	services.Configure<AzureAd>(_configuration.GetSection("Authentication:AzureAd"));
+	services.Configure<AzureAdOptions>(_configuration.GetSection("Authentication:AzureAd"));
 	var azureAdSettings = _configuration.Get<AzureAd>();
 
 	// register Azure B2C Settings to be able to use the IOptions pattern via DI
-	services.Configure<AzureAdB2C>(_configuration.GetSection("Authentication:AzureAdB2C"));
+	services.Configure<AzureAdB2COptions>(_configuration.GetSection("Authentication:AzureAdB2C"));
 	var azureB2CSettings = _configuration.Get<AzureAdB2C>();
 	//...
 }

@@ -21,12 +21,12 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
         public void ConfigureServices(IServiceCollection services)
         {
             // register Azure AD Settings to be able to use the IOptions pattern via DI
-            services.Configure<AzureAd>(_configuration.GetSection("Authentication:AzureAd"));
-            var azureAdSettings = _configuration.Get<AzureAd>();
+            services.Configure<AzureAdOptions>(_configuration.GetSection("Authentication:AzureAd"));
+            var azureAdSettings = _configuration.Get<AzureAdOptions>();
 
             // register Azure B2C Settings to be able to use the IOptions pattern via DI
-            services.Configure<AzureAdB2C>(_configuration.GetSection("Authentication:AzureAdB2C"));
-            var azureAdB2CSettings = _configuration.Get<AzureAdB2C>();
+            services.Configure<AzureAdB2COptions>(_configuration.GetSection("Authentication:AzureAdB2C"));
+            var azureAdB2CSettings = _configuration.Get<AzureAdB2COptions>();
 
             // Add JwtBearerAuthentication for Azure AD and B2C
             services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
