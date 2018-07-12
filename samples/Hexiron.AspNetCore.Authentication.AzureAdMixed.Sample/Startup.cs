@@ -32,7 +32,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
             services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
 
             // You can also only register for Azure AD
-            // services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
+            //services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
 
             // You can also only register for Azure B2C
             //services.AddAzureB2CJwtBearerAuthentication(azureAdB2CSettings, typeof(Startup).Assembly);

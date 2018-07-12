@@ -9,11 +9,33 @@ You can also define your own authorize attributes with the name of the scopes in
 
 **Features**  
 
-- Validate Azure AD JWT tokens
-- Enables the use of Authorization policies with the same name as the Application Permission defined in Azure AD
-- Validate Azure AD B2C JWT tokens
-- Enables the use of Authorization policies with the same name as the scopes defined in Azure B2C
+- Scan the assembly controllers for Authorization attributes and get back a list of custom defined policies
+
+```csharp  
+assembly.FindAuthorizationPolicies(policyIdentifier: "mypolicyPrefix_")
+```
+
+- Validate Azure AD JWT tokens and validate if it contains the correct scope claim as the specified policy in the authorization attribute.
+
+```csharp  
+services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
+```
+
+- Validate Azure AD B2C JWT tokens and validate if it contains the correct scope claim as the specified policy in the authorization attribute
+
+```csharp  
+services.AddAzureB2CJwtBearerAuthentication(azureAdB2CSettings, typeof(Startup).Assembly);
+```
+
+- Validate both Azure AD and Azure AD B2C JWT tokens and validate if it contains the correct scope claim as the specified policy in the authorization attribute
+
+```csharp  
+services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
+```
+
 - TODO: ASPNET.Core OpenIdConnect + authorization flow with Azure B2C for user login
+
+## How to use ##
 
 ### 1. Create a new ASP.NET Core project ###
 In Visual Studio 2017.
@@ -169,3 +191,21 @@ TODO How to create tenant
 9. Don't forget to click on "Grant Permissions"
 
 The scopes will now be added to the JWT token of the client and validated at API side.
+
+### Testing instructions
+
+If you want to test your application using the WebApplicationFactory, make sure you register the "allowanonymousfilter" and register the policies using the extensionmethod "FindAuthorizationPolicies".
+If not, you will get an exception saying the policy has not been registered.  
+
+In your TestStartup.cs class:
+
+```csharp  
+public void ConfigureServices(IServiceCollection services)
+{
+	var authorizationPolicies = typeof(Startup).Assembly.FindAuthorizationPolicies("");
+    services.AddAuthorization(o =>
+    {
+    	authorizationPolicies.ForEach(customDefinedPolicy => o.AddPolicy(customDefinedPolicy, policyBuilder => policyBuilder.RequireClaim("Fake")));
+    });
+}
+```

@@ -26,7 +26,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             var defaultPolicy = customPolicyBuilder.RequireAuthenticatedUser().Build();
 
             // scan custom defined policies in Authorization attribute to add as custom policies
-            var customDefinedPolicies = FindPolicyNames(controllerAssembly, policyIdentifier);
+            var customDefinedPolicies = FindAuthorizationPolicies(controllerAssembly, policyIdentifier);
             // add these custom policies to the authorization process
             services.AddAuthorization(o =>
             {
@@ -53,7 +53,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             var defaultPolicy = customPolicyBuilder.RequireAuthenticatedUser().Build();
 
             // scan custom defined policies in Authorization attribute to add as custom policies
-            var customDefinedPolicies = FindPolicyNames(controllerAssembly, policyIdentifier);
+            var customDefinedPolicies = FindAuthorizationPolicies(controllerAssembly, policyIdentifier);
             // add these custom policies to the authorization process
             services.AddAuthorization(o =>
             {
@@ -82,7 +82,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             var defaultPolicy = customPolicyBuilder.RequireAuthenticatedUser().Build();
 
             // scan custom defined policies in Authorization attribute to add as custom policies
-            var customDefinedPolicies = FindPolicyNames(controllerAssembly, policyIdentifier);
+            var customDefinedPolicies = FindAuthorizationPolicies(controllerAssembly, policyIdentifier);
             // add these custom policies to the authorization process
             services.AddAuthorization(o =>
             {
@@ -97,7 +97,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             });
         }
 
-        private static List<string> FindPolicyNames(Assembly assembly, string policyIdentifier)
+        public static List<string> FindAuthorizationPolicies(this Assembly assembly, string policyIdentifier)
         {
             var authorizeAttributes = new List<AuthorizeAttribute>();
             //filter out only controllers
