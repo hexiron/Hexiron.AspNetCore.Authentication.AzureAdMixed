@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
+namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample
 {
     public class Program
     {

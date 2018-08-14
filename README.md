@@ -33,7 +33,10 @@ services.AddAzureB2CJwtBearerAuthentication(azureAdB2CSettings, typeof(Startup).
 services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
 ```
 
-- TODO: ASPNET.Core OpenIdConnect + authorization flow with Azure B2C for user login
+- Enable an application to use Azure AD B2C Cookie login authentication. (See example: "Hexiron.AspNetCore.Authentication.HostSample")
+```csharp  
+services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true);
+```
 
 ## How to use ##
 

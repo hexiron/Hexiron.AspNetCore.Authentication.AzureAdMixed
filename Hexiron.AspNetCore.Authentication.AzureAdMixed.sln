@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9FF81C4D-CC0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{BE7AFD56-26AA-4866-A973-D071DFFE1074}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample", "samples\Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample\Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample.csproj", "{E03426DF-992B-4829-8F88-B4DCF99029B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample", "samples\Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample\Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample.csproj", "{E03426DF-992B-4829-8F88-B4DCF99029B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D07A7EB4-059E-4248-A103-5A21F830B1CE}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		build.ps1 = build.ps1
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexiron.AspNetCore.Authentication.HostSample", "samples\Hexiron.AspNetCore.Authentication.HostSample\Hexiron.AspNetCore.Authentication.HostSample.csproj", "{A588957B-D5B5-4D35-B527-4B94C449140B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{E03426DF-992B-4829-8F88-B4DCF99029B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E03426DF-992B-4829-8F88-B4DCF99029B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E03426DF-992B-4829-8F88-B4DCF99029B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A588957B-D5B5-4D35-B527-4B94C449140B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A588957B-D5B5-4D35-B527-4B94C449140B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A588957B-D5B5-4D35-B527-4B94C449140B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A588957B-D5B5-4D35-B527-4B94C449140B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E2EDAF1C-81F4-4AF9-9E9A-4B64B4639685} = {9FF81C4D-CC03-4EBD-A5E4-632C17720C25}
 		{E03426DF-992B-4829-8F88-B4DCF99029B6} = {BE7AFD56-26AA-4866-A973-D071DFFE1074}
+		{A588957B-D5B5-4D35-B527-4B94C449140B} = {BE7AFD56-26AA-4866-A973-D071DFFE1074}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCBF8C29-4BE8-4F72-A796-E9419DC0BF9C}

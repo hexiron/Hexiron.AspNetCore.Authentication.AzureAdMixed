@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <PackageId>Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample</PackageId>
+    <Authors>Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample</Authors>
+    <Company>Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample</Company>
+    <Product>Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample</Product>
+    <AssemblyName>Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample</AssemblyName>
+    <RootNamespace>Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Hexiron.AspNetCore.Authentication.AzureAdMixed\Hexiron.AspNetCore.Authentication.AzureAdMixed.csproj" />
+  </ItemGroup>
+
+</Project>

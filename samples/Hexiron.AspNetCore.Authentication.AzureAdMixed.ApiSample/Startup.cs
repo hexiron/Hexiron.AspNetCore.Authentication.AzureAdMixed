@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample
+namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample
 {
     public class Startup
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.Sample.Controllers
+namespace Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample.Controllers
 {
     [Route("[controller]")]
     public class SampleController : Controller

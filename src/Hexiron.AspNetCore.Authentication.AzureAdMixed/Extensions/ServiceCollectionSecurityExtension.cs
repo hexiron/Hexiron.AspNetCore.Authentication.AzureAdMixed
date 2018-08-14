@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Hexiron.AspNetCore.Authentication.AzureAdMixed.Models;
 using Hexiron.Azure.ActiveDirectory.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
 {
@@ -95,6 +103,134 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                         policy.AuthenticationSchemes.Add(AzureJwtSchemes.AZURE_AD_AUTHENTICATION_SCHEME);
                     }));
             });
+        }
+
+        public static AuthenticationBuilder AddAzureB2CCookieAuthentication(this IServiceCollection services, AzureAdB2COptions azureAdB2CSettings, string resetPasswordUrl,  bool requestAccessToken)
+        {
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+                // no javascript calls to cookie
+                options.Cookie.HttpOnly = true;
+            });
+            return services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => 
+                {
+                    options.ClientId = azureAdB2CSettings.ClientId;
+                    // Set the authority to your Azure domain
+                    options.Authority = azureAdB2CSettings.Authority;
+
+                    options.UseTokenLifetime = true;
+                    options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "name" };
+
+                    options.Events = new OpenIdConnectEvents
+                    {
+                        //Check via Azure Graph API if user is in correct group
+                        //OnTokenValidated = context =>
+                        //{
+                        //    var serviceProvider = services.BuildServiceProvider();
+                        //    // resolve GraphApiConnector
+                        //    var graphApiConnector = serviceProvider.GetService<IAzureGraphApiConnector>();
+                        //    // Get membergroups for user from AzureAd
+                        //    var signedInUserId = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+                        //    var memberGroups = graphApiConnector.GetMemberGroupsForUser(signedInUserId).GetAwaiter().GetResult();
+                        //    // create roleclaim
+                        //    var roleClaims = memberGroups.Select(x => new Claim(ClaimTypes.Role, x));
+                        //    // Add RoleClaim to useridentity
+                        //    ((ClaimsIdentity)context.Principal.Identity).AddClaims(roleClaims);
+
+                        //    return Task.FromResult(0);
+                        //},
+                        OnRedirectToIdentityProvider = (context) =>
+                        {
+                            // pass language (adds ui_locales to query string)
+                            var requestCulture = context.HttpContext.Features.Get<IRequestCultureFeature>();
+                            var lang = requestCulture?.RequestCulture.Culture.TextInfo.ToTitleCase(
+                                requestCulture.RequestCulture.Culture.TwoLetterISOLanguageName);
+                            if (lang != null)
+                            {
+                                context.ProtocolMessage.UiLocales = lang;
+
+                            }
+                            if (requestAccessToken)
+                            {
+                                context.ProtocolMessage.Scope += $" offline_access {String.Join(" ", azureAdB2CSettings.ApiScopes)}";
+                                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                            }
+                            return Task.FromResult(0);
+                        },
+                        OnRemoteFailure = (context) =>
+                        {
+                            context.HandleResponse();
+                            // Handle the error code that Azure AD B2C throws when trying to reset a password from the login page 
+                            // because password reset is not supported by a "sign-up or sign-in policy"
+                            if (context.Failure is OpenIdConnectProtocolException && context.Failure.Message.Contains("AADB2C90118"))
+                            {
+                                // If the user clicked the reset password link, redirect to the reset password route
+                                context.Response.Redirect(resetPasswordUrl);
+                            }
+                            else if (context.Failure is OpenIdConnectProtocolException && context.Failure.Message.Contains("access_denied"))
+                            {
+                                context.Response.Redirect("/");
+                            }
+                            else
+                            {
+                                throw context.Failure;
+                            }
+                            return Task.FromResult(0);
+                        },
+                        OnAuthorizationCodeReceived = async (context) =>
+                        {
+                            // Use MSAL to swap the code for an access token
+                            // Extract the code from the response notification
+                            var auhtorizationCode = context.ProtocolMessage.Code;
+
+                            string signedInUserId = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+                            var userTokenCache = new MsalSessionCache(signedInUserId, context.HttpContext).GetMsalCacheInstance();
+                            var clientApplication = new ConfidentialClientApplication(azureAdB2CSettings.ClientId, azureAdB2CSettings.Authority, azureAdB2CSettings.RedirectUri, new ClientCredential(azureAdB2CSettings.ClientSecret), userTokenCache, null);
+
+                            try
+                            {
+                                var result = await clientApplication.AcquireTokenByAuthorizationCodeAsync(auhtorizationCode, azureAdB2CSettings.ApiScopes);
+                                context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new Exception("AcquireTokenByAuthorizationCodeAsync failed", e);
+                            }
+                        },
+                        // handle the logout redirection 
+                        OnRedirectToIdentityProviderForSignOut = (context) =>
+                        {
+                            var logoutUri = $"{azureAdB2CSettings.Domain}/v2/logout?client_id={azureAdB2CSettings.ClientId}";
+
+                            var postLogoutUri = context.Properties.RedirectUri;
+                            if (!string.IsNullOrEmpty(postLogoutUri))
+                            {
+                                if (postLogoutUri.StartsWith("/"))
+                                {
+                                    // transform to absolute
+                                    var request = context.Request;
+                                    postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase +
+                                                    postLogoutUri;
+                                }
+                                logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
+                            }
+                            // set the audience parameter to get also an access token back after login to be able to call APIs of this application
+                            context.ProtocolMessage.SetParameter("audience", azureAdB2CSettings.ClientId);
+                            context.Response.Redirect(logoutUri);
+                            context.HandleResponse();
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
         }
 
         public static List<string> FindAuthorizationPolicies(this Assembly assembly, string policyIdentifier)
