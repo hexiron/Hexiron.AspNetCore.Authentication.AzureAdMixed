@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Hexiron.AspNetCore.Authentication.AzureAdMixed.Models;
+using Hexiron.Azure.ActiveDirectory.Connectors.Interfaces;
 using Hexiron.Azure.ActiveDirectory.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -105,7 +106,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
             });
         }
 
-        public static AuthenticationBuilder AddAzureB2CCookieAuthentication(this IServiceCollection services, AzureAdB2COptions azureAdB2CSettings, string resetPasswordUrl,  bool requestAccessToken)
+        public static AuthenticationBuilder AddAzureB2CCookieAuthentication(this IServiceCollection services, AzureAdB2COptions azureAdB2CSettings, string resetPasswordUrl,  bool requestAccessToken, bool loadMemberGroupsAsRoles = false)
         {
             services.AddSession(options =>
             {
@@ -131,22 +132,6 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
 
                     options.Events = new OpenIdConnectEvents
                     {
-                        //Check via Azure Graph API if user is in correct group
-                        //OnTokenValidated = context =>
-                        //{
-                        //    var serviceProvider = services.BuildServiceProvider();
-                        //    // resolve GraphApiConnector
-                        //    var graphApiConnector = serviceProvider.GetService<IAzureGraphApiConnector>();
-                        //    // Get membergroups for user from AzureAd
-                        //    var signedInUserId = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
-                        //    var memberGroups = graphApiConnector.GetMemberGroupsForUser(signedInUserId).GetAwaiter().GetResult();
-                        //    // create roleclaim
-                        //    var roleClaims = memberGroups.Select(x => new Claim(ClaimTypes.Role, x));
-                        //    // Add RoleClaim to useridentity
-                        //    ((ClaimsIdentity)context.Principal.Identity).AddClaims(roleClaims);
-
-                        //    return Task.FromResult(0);
-                        //},
                         OnRedirectToIdentityProvider = (context) =>
                         {
                             // pass language (adds ui_locales to query string)
@@ -230,6 +215,26 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                             return Task.CompletedTask;
                         }
                     };
+                    if (loadMemberGroupsAsRoles)
+                    {
+                        //Check via Azure Graph API if user is in correct group
+                        options.Events.OnTokenValidated = context =>
+                        {
+                            var serviceProvider = services.BuildServiceProvider();
+                            // resolve GraphApiConnector
+                            var graphApiConnector = serviceProvider.GetService<IGraphApiConnector>();
+                            // Get membergroups for user from AzureAd
+                            var signedInUserId = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+                            var memberGroups = graphApiConnector.GetMemberGroupsForUser(signedInUserId).GetAwaiter()
+                                .GetResult();
+                            // create roleclaim
+                            var roleClaims = memberGroups.Select(x => new Claim(ClaimTypes.Role, x));
+                            // Add RoleClaim to useridentity
+                            ((ClaimsIdentity) context.Principal.Identity).AddClaims(roleClaims);
+
+                            return Task.FromResult(0);
+                        };
+                    }
                 });
         }
 

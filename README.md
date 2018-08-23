@@ -37,6 +37,10 @@ services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSett
 ```csharp  
 services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true);
 ```
+This library can also load the groups where the user is a member of in Azure AD as a role so you can use "HttpContext.User.IsInRole(...)"
+```csharp  
+services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true, true);
+```
 
 ## How to use ##
 
