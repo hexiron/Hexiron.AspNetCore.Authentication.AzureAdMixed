@@ -37,10 +37,11 @@ services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSett
 ```csharp  
 services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true);
 ```
-This library can also load the groups where the user is a member of in Azure AD as a role so you can use "HttpContext.User.IsInRole(...)"
+This library can also load the Azure AD groups where the user is a member of. It will add these groups as role claims to the user identity object, so you can use "HttpContext.User.IsInRole(...)"
 ```csharp  
 services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true, true);
 ```
+However, if you want to use this feature, don't forget to register the IGraphApiConnector as this is used behind the scenes to get the groups from Azure.
 
 ## How to use ##
 

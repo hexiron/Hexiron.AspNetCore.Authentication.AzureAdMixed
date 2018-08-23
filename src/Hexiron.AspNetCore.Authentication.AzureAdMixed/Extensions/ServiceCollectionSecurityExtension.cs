@@ -223,6 +223,10 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                             var serviceProvider = services.BuildServiceProvider();
                             // resolve GraphApiConnector
                             var graphApiConnector = serviceProvider.GetService<IGraphApiConnector>();
+                            if (graphApiConnector == null)
+                            {
+                                throw new Exception("No implementation has been registered for IGraphApiConnector");
+                            }
                             // Get membergroups for user from AzureAd
                             var signedInUserId = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
                             var memberGroups = graphApiConnector.GetMemberGroupsForUser(signedInUserId).GetAwaiter()
