@@ -141,14 +141,28 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                             if (lang != null)
                             {
                                 context.ProtocolMessage.UiLocales = lang;
-
                             }
-                            if (requestAccessToken)
+                            
+                            // no explict policy or default policy passed - just continue
+                            var defaultPolicy = azureAdB2CSettings.DefaultPolicy;
+                            if (!context.Properties.Items.TryGetValue(AzureAdB2COptions.POLICY_AUTHENTICATION_PROPERTY, out var policy) || policy.Equals(defaultPolicy))
                             {
-                                context.ProtocolMessage.Scope += $" offline_access {String.Join(" ", azureAdB2CSettings.ApiScopes)}";
-                                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                                if (requestAccessToken)
+                                {
+                                    context.ProtocolMessage.Scope += $" offline_access {String.Join(" ", azureAdB2CSettings.ApiScopes)}";
+                                    context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+                                }
                             }
-                            return Task.FromResult(0);
+                            else
+                            {
+                                // explict policy set in context => see AuthenticationProperties.Items.Add("Policy", desired policy_name)
+                                // example --> custom policy has been set to reset password
+                                context.ProtocolMessage.Scope = OpenIdConnectScope.OpenIdProfile;
+                                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
+                                context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower().Replace($"/{defaultPolicy.ToLower()}/", $"/{policy.ToLower()}/");
+                                context.Properties.Items.Remove(AzureAdB2COptions.POLICY_AUTHENTICATION_PROPERTY);
+                            }
+                            return Task.CompletedTask;
                         },
                         OnRemoteFailure = (context) =>
                         {
