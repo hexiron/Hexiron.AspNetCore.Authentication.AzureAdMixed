@@ -219,7 +219,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                                     postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase +
                                                     postLogoutUri;
                                 }
-                                logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
+                                logoutUri += $"&post_logout_redirect_uri={Uri.EscapeDataString(postLogoutUri)}";
                             }
                             // set the audience parameter to get also an access token back after login to be able to call APIs of this application
                             context.ProtocolMessage.SetParameter("audience", azureAdB2CSettings.ClientId);
