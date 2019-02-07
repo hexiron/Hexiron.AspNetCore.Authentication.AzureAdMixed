@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexiron.AspNetCore.Authentication.HostSample", "samples\Hexiron.AspNetCore.Authentication.HostSample\Hexiron.AspNetCore.Authentication.HostSample.csproj", "{A588957B-D5B5-4D35-B527-4B94C449140B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hexiron.AspNetCore.Authentication.HostToSample", "samples\Hexiron.AspNetCore.Authentication.HostSample\Hexiron.AspNetCore.Authentication.HostToSample.csproj", "{A588957B-D5B5-4D35-B527-4B94C449140B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hexiron.AspNetCore.Authentication.UiSample", "samples\Hexiron.AspNetCore.Authentication.UiSample\Hexiron.AspNetCore.Authentication.UiSample.csproj", "{6A475BF6-4AC8-4FD6-BBEC-6C55C6229FDD}"
 EndProject

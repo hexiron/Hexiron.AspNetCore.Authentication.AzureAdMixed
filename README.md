@@ -2,7 +2,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/11r3paicwclfblmc/branch/master?svg=true)](https://ci.appveyor.com/project/mkeymolen/hexiron-aspnetcore-authentication-azureadmixed/branch/master)  [![license](https://img.shields.io/github/license/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=2592000)](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/blob/master/LICENSE)  [![NuGet](https://img.shields.io/nuget/v/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=86400)](https://www.nuget.org/packages/Hexiron.AspNetCore.Authentication.AzureAdMixed/)
 
-Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the current Microsoft.AspNetCore.Authentication library that enables you to use both AzureAD and Azure AD B2C combined.
+Hexiron.AspNetCore.Authentication.AzureAdMixed contains extensions on the current Microsoft.AspNetCore.Authentication library that enables you to use both AzureAD and Azure AD B2C in the same host.  
 With this extension you can accept JWT tokens issued by either an Azure AD or Azure B2C tenant. 
 
 You can also define your own authorize attributes with the name of the scopes in Azure B2C and/or Application permissions in Azure AD. This enables you to do fine grained authorization on API method level!
@@ -71,13 +71,15 @@ See example below if you store them in appsettingsfile:
     },
     "AzureAdB2C": {
       "Enabled": true,
-      "ClientId": "aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa",
-      "Tenant": "tentantname.onmicrosoft.com",
-      "SignUpSignInPolicyId": "defined_Policy_from_Azure",
-      "ResetPasswordPolicyId": "defined_Policy_from_Azure",
-      "EditProfilePolicyId": "defined_Policy_from_Azure",
-      "RedirectUri": "https://.../signin-oidc",
-      "ClientSecret": "avoid this and get if from azure vault or imediately from appsettings in azure webapp"
+      "ClientId": "id of the azure ad b2c application",
+      "Tenant": "azureadb2c AD name",
+      "DefaultPolicy": "policy name",
+      "ResetPasswordPolicyId":  "", 
+      "RedirectUri": "https://localhost:port/signin-oidc",
+      "ClientSecret": "only needed if you want to get an accesstoken for an API",
+      "Scopes": [
+        "verb:noun"
+      ]
     }
   }
 }
@@ -103,8 +105,12 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 4. Register the middleware service to enable JWT validation
-In the startup.cs class, register the middleware.  
+### 4. In case you just want to enable Azure AD B2C cookie authentication
+--see de Hexiron.AspNetCore.Authentication.UiSample in the samples folder--
+
+### 5. In case of an API host, register the middleware service to enable JWT validation
+--see de Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample and Hexiron.AspNetCore.Authentication.AzureAdMixed.HostToApiSample in the samples folder--
+In the startup.cs class, register the middleware.
 You have multiple possibilities:  
 - You only register Azure AD JWT validation
 - You only register Azure B2C JWT validation
@@ -123,15 +129,16 @@ public void ConfigureServices(IServiceCollection services)
 }  
 ```
 
-### 5. Create your Azure B2C tenant and register you API app
+### 6. Create your Azure B2C tenant and register you API app
 **TODO: How to create tenant**
 Once your tenant has been created in Azure:
 
 - Add your tenant id (...onmicrosoft.com) to the settings file 
 - Create your API app in your B2C tenant. Add the B2C suffix to your app names if your using your B2C tenant for both Azure AD and Azure AD B2C. This for simplicity later on
 - Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureADB2C part
-- Create a Sign-up/Sign-in policy and select the attributes you want to ask to fill in by the user (Sign-up attributes) and the attributes you want to send to the API (Application claims)
-- Copy the name of this sign-up/sign-in policy and add it to the AzureB2CSettings part (SignUpSignInPolicyId)
+- Create a Sign-up/Sign-in policy and a resetpassword policy and select the attributes you want to ask to fill in by the user (Sign-up attributes) and the attributes you want to send to the API (Application claims)
+- Copy the name of this sign-up/sign-in policy and add it to the AzureB2CSettings part (DefaultPolicy)  
+- Copy the name of the created resetpassword policy to the AzureB2CSettings part (ResetPasswordPolicyId)  
 - Go to "Published scopes" and create the scopes you need to access your APIs (you will add the same scope name as an Authorization policy attribute on your API methods)  
 Example: "read:methods"
 - Add an Authorization attribute and register this scope as a policy on your API method
