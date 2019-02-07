@@ -149,7 +149,7 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
                             {
                                 if (requestAccessToken)
                                 {
-                                    context.ProtocolMessage.Scope += $" offline_access {String.Join(" ", azureAdB2CSettings.ApiScopes)}";
+                                    context.ProtocolMessage.Scope += $" offline_access {String.Join(" ", azureAdB2CSettings.Scopes)}";
                                     context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
                                 }
                             }
@@ -196,8 +196,11 @@ namespace Hexiron.AspNetCore.Authentication.AzureAdMixed
 
                             try
                             {
-                                var result = await clientApplication.AcquireTokenByAuthorizationCodeAsync(auhtorizationCode, azureAdB2CSettings.ApiScopes);
-                                context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+                                if (requestAccessToken)
+                                {
+                                    var result = await clientApplication.AcquireTokenByAuthorizationCodeAsync(auhtorizationCode, azureAdB2CSettings.Scopes);
+                                    context.HandleCodeRedemption(result.AccessToken, result.IdToken);
+                                }
                             }
                             catch (Exception e)
                             {
