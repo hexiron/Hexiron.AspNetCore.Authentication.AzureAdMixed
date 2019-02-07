@@ -151,7 +151,7 @@ public IActionResult Methods()
 }
 ```
 
-### 6. Register your Azure AD application if you need API to API communication (client credentials flow or machine to machine communication
+### 6. Register your Azure AD application and if you need host to API communication (client credentials flow or machine to machine communication
 
 - Within the same B2C Active directory tenant in Azure, go to all services -> Azure Active directory
 - Go to App registrations and create your API app.  For simplicity, take the same name as the name you've chosen in Azure B2C but remove the B2C suffix
