@@ -1,8 +1,8 @@
-# Getting started with ASP.NET Core 2 and Azure AD/B2C
+# Combine Azure AD and Azure AD B2C in AspNetCore 2.x.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/11r3paicwclfblmc/branch/master?svg=true)](https://ci.appveyor.com/project/mkeymolen/hexiron-aspnetcore-authentication-azureadmixed/branch/master)  [![license](https://img.shields.io/github/license/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=2592000)](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/blob/master/LICENSE)  [![NuGet](https://img.shields.io/nuget/v/Hexiron.AspNetCore.Authentication.AzureAdMixed.svg?maxAge=86400)](https://www.nuget.org/packages/Hexiron.AspNetCore.Authentication.AzureAdMixed/)
 
-Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the current Microsoft.AspNetCore.Authentication library that enables  you to use both AzureAD and Azure AD B2C combined.
+Hexiron.AspNetCore.Authentication.AzureAdMixed contains an extension on the current Microsoft.AspNetCore.Authentication library that enables you to use both AzureAD and Azure AD B2C combined.
 With this extension you can accept JWT tokens issued by either an Azure AD or Azure B2C tenant. 
 
 You can also define your own authorize attributes with the name of the scopes in Azure B2C and/or Application permissions in Azure AD. This enables you to do fine grained authorization on API method level!
@@ -15,7 +15,7 @@ You can also define your own authorize attributes with the name of the scopes in
 assembly.FindAuthorizationPolicies(policyIdentifier: "mypolicyPrefix_")
 ```
 
-- Validate Azure AD JWT tokens and validate if it contains the correct scope claim as the specified policy in the authorization attribute.
+- Validate Azure AD JWT tokens and check if it contains the correct scope claim as the specified policy in the authorization attribute.
 
 ```csharp  
 services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
@@ -33,7 +33,7 @@ services.AddAzureB2CJwtBearerAuthentication(azureAdB2CSettings, typeof(Startup).
 services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
 ```
 
-- Enable an application to use Azure AD B2C Cookie login authentication. (See example: "Hexiron.AspNetCore.Authentication.HostSample")
+- Enable an application to use Azure AD B2C Cookie login authentication and activate authorization grant flow to get an access token for an Azure AD B2C API. (See example: "Hexiron.AspNetCore.Authentication.HostSample")
 ```csharp  
 services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true);
 ```
