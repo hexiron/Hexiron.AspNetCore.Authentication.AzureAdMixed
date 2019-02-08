@@ -9,26 +9,17 @@ You can also define your own authorize attributes with the name of the scopes in
 
 **Features**  
 
-- Scan the assembly controllers for Authorization attributes and get back a list of custom defined policies
-
-```csharp  
-assembly.FindAuthorizationPolicies(policyIdentifier: "mypolicyPrefix_")
-```
-
-- Validate Azure AD JWT tokens and check if it contains the correct scope claim as the specified policy in the authorization attribute.
-
+- Accept an Azure AD JWT token and validate if it contains a correct scope claim (= the policy you added in the authorization attribute of the action method).
 ```csharp  
 services.AddAzureAdJwtBearerAuthentication(azureAdSettings, typeof(Startup).Assembly);
 ```
 
-- Validate Azure AD B2C JWT tokens and validate if it contains the correct scope claim as the specified policy in the authorization attribute
-
+- Accept an Azure AD B2C JWT token and validate if it contains a correct scope claim (= the policy you added in the authorization attribute of the action method)
 ```csharp  
 services.AddAzureB2CJwtBearerAuthentication(azureAdB2CSettings, typeof(Startup).Assembly);
 ```
 
-- Validate both Azure AD and Azure AD B2C JWT tokens and validate if it contains the correct scope claim as the specified policy in the authorization attribute
-
+- Accept both Azure AD and Azure AD B2C JWT tokens and validate if it contains a correct scope claim (= the policy you added in the authorization attribute of the action method)
 ```csharp  
 services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSettings, typeof(Startup).Assembly);
 ```
@@ -37,13 +28,21 @@ services.AddAzureAdAndB2CJwtBearerAuthentication(azureAdSettings, azureAdB2CSett
 ```csharp  
 services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true);
 ```
+
 This library can also load the Azure AD groups where the user is a member of. It will add these groups as role claims to the user identity object, so you can use "HttpContext.User.IsInRole(...)"
 ```csharp  
 services.AddAzureB2CCookieAuthentication(azureAdB2CSettings, "/account/reset", true, true);
 ```
 However, if you want to use this feature, don't forget to register the IGraphApiConnector as this is used behind the scenes to get the groups from Azure.
 
+- Scan the assembly controllers for Authorization attributes and get back a list of custom defined policies
+```csharp  
+assembly.FindAuthorizationPolicies(policyIdentifier: "mypolicyPrefix_")
+```
+
 ## How to use ##
+
+See the [Wiki](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/wiki) for HowTo's
 
 ### 1. Create a new ASP.NET Core project ###
 In Visual Studio 2017.
@@ -106,10 +105,10 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 ### 4. In case you just want to enable Azure AD B2C cookie authentication
---see de Hexiron.AspNetCore.Authentication.UiSample in the samples folder--
+Follow the steps described at [How to Authenticate with Azure AD B2C in AspNetCore](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/wiki/How-to-Authenticate-with-Azure-AD-B2C-in-AspNetCore)
 
 ### 5. In case of an API host, register the middleware service to enable JWT validation
---see de Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample and Hexiron.AspNetCore.Authentication.AzureAdMixed.HostToApiSample in the samples folder--
+**See de Hexiron.AspNetCore.Authentication.AzureAdMixed.ApiSample and Hexiron.AspNetCore.Authentication.AzureAdMixed.HostToApiSample in the samples folder**  
 In the startup.cs class, register the middleware.
 You have multiple possibilities:  
 - You only register Azure AD JWT validation
@@ -130,15 +129,8 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 ### 6. Create your Azure B2C tenant and register you API app
-**TODO: How to create tenant**
-Once your tenant has been created in Azure:
 
-- Add your tenant id (...onmicrosoft.com) to the settings file 
-- Create your API app in your B2C tenant. Add the B2C suffix to your app names if your using your B2C tenant for both Azure AD and Azure AD B2C. This for simplicity later on
-- Copy the ApplicationId (=ClientId) to the settingsfiles under the AzureADB2C part
-- Create a Sign-up/Sign-in policy and a resetpassword policy and select the attributes you want to ask to fill in by the user (Sign-up attributes) and the attributes you want to send to the API (Application claims)
-- Copy the name of this sign-up/sign-in policy and add it to the AzureB2CSettings part (DefaultPolicy)  
-- Copy the name of the created resetpassword policy to the AzureB2CSettings part (ResetPasswordPolicyId)  
+Follow the steps described at [How to Authenticate with Azure AD B2C in AspNetCore](https://github.com/hexiron/Hexiron.AspNetCore.Authentication.AzureAdMixed/wiki/How-to-Authenticate-with-Azure-AD-B2C-in-AspNetCore)
 - Go to "Published scopes" and create the scopes you need to access your APIs (you will add the same scope name as an Authorization policy attribute on your API methods)  
 Example: "read:methods"
 - Add an Authorization attribute and register this scope as a policy on your API method
@@ -185,7 +177,6 @@ Make sure you create unique identifiers as Id
 ```
 
 ### 7. Register your client apps and give them the permissions to the scopes
-TODO How to create tenant
 
 **In Azure AD B2C**
 1. Create a new app for your client
